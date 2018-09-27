@@ -59,8 +59,10 @@ sample_champ() ->
     ].
 
 
+
+
 get_stat(Champ) ->
-    {0, 0, 0.0, 0.9}.
+  {0, 0, 0.0, 0.9}.
 
 
 get_stat_test() ->
@@ -69,7 +71,13 @@ get_stat_test() ->
 
 
 filter_sick_players(Champ) ->
-    Champ.
+    lists:filter(fun({team, Name Players}) ->
+          Player2 = filter_team(Players),
+          Team2 = {team, Name, Player2},
+          if
+            length(Player2) >= 5 -> {true, Team2};
+            true -> false
+          end.
 
 
 filter_sick_players_test() ->

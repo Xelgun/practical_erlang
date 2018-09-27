@@ -37,19 +37,29 @@ init() ->
 
 
 add_idea(Id, Title, Author, Rating, Description) ->
-    ok.
+  ets:insert(great_ideas_table, {Id, Title, Author, Rating, Description}),
+  ok.
 
 
 get_idea(Id) ->
-    not_found.
+    case ets:lookup(great_ideas_table, Id) of
+      [GreatIdea] -> {ok, GreatIdea};
+      [] -> not_found
+    end .
 
 
 ideas_by_author(Author) ->
-    [].
+  IdeasByAuthor = ets:fun2ms(
+    fun(#idea{author = _Author} = Idea)
+      when _Author =:= Author -> Idea end),
+  ets:select(great_ideas_table, IdeasByAuthor).
 
 
 ideas_by_rating(Rating) ->
-    [].
+  IdeasByRating = ets:fun2ms(
+    fun(#idea{rating = _Rating} = Idea)
+      when _Rating >= Rating -> Idea end),
+  ets:select(great_ideas_table, IdeasByRating).
 
 
 get_authors() ->

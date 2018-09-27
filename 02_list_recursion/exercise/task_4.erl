@@ -7,9 +7,17 @@
 
 %% implement lists:dropwhile/2
 %% http://www.erlang.org/doc/man/lists.html#dropwhile-2
-dropwhile(Pred, List) ->
-    List.
+dropwhile(_, []) ->
+  [];
 
+dropwhile(Pred, List) ->
+  case List of
+    [] -> [];
+    [Head | Tail] -> case Pred(Head) of
+                       true -> dropwhile(Pred, Tail);
+                       false -> List
+                     end
+  end.
 
 dropwhile_test() ->
     F = fun(Val) -> Val =:= 32 end,
@@ -24,8 +32,18 @@ dropwhile_test() ->
 
 %% implement lists:takewhile/2
 %% http://www.erlang.org/doc/man/lists.html#takewhile-2
-takewhile(Pred, List) ->
-    List.
+takewhile(_, []) ->
+  [];
+
+takewhile(Pred, [Head | Tail]) ->
+  takewhile(Pred, [Head | Tail], Pred(Head)).
+
+
+takewhile(Pred, [Head | Tail], true) ->
+  [Head | takewhile(Pred, Tail)];
+
+takewhile(_, _, false) ->
+  [].
 
 
 takewhile_test() ->
