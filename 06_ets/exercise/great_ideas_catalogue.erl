@@ -37,9 +37,8 @@ init() ->
 
 
 add_idea(Id, Title, Author, Rating, Description) ->
-  ets:insert(great_ideas_table, {Id, Title, Author, Rating, Description}),
+  ets:insert(great_ideas_table, #idea{id = Id, title = Title, author = Author, rating = Rating, description = Description}),
   ok.
-
 
 get_idea(Id) ->
     case ets:lookup(great_ideas_table, Id) of
@@ -62,5 +61,21 @@ ideas_by_rating(Rating) ->
   ets:select(great_ideas_table, IdeasByRating).
 
 
+
 get_authors() ->
-    [].
+  Authors = ets:select(great_ideas_table, [{{idea,'_','_','$1','_','_'},[],['$1']}]),
+  AuthorsWithIdeas =  lists:foldl(
+    fun(Author, Acc) ->
+        case maps:find(Author, Acc) of
+          {ok, Num} -> Acc#{Author => Num + 1};
+          error -> Acc#{Author => 1}
+        end
+    end,
+    #{}, Authors
+  ),
+  lists:sort(
+    fun({AuthorOneName, _Idea}, {AuthorTwoName, _Idea}) -> AuthorOneName < AuthorTwoName;
+      ({_, AuthorOneIdea}, {_, AuthorTwoIdea}) -> AuthorOneIdea > AuthorTwoIdea
+    end,
+    maps:to_list(AuthorsWithIdeas)
+  ).
