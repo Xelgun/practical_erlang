@@ -26,3 +26,13 @@ handle_call(get_messages, _From, Messages) ->
     ReversedMessages = lists:reverse(Messages),
     {reply, ReversedMessages, Messages}.
 
+
+
+handle_info(_Request, State) ->
+    {noreply, State}.
+
+terminate(_Reason, _State) ->
+    ok.
+
+code_change(_OldVersion, State, _Extra) ->
+    {ok, State}.

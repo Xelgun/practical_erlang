@@ -2,7 +2,7 @@
 -behavior(gen_server).
 
 -export([start_link/0, add_user/3, remove_user/2, get_users/1, add_message/3, get_history/1]).
--export([init/1, handle_call/3, handle_cast/2]).
+-export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
 
 
 start_link() ->
@@ -29,7 +29,7 @@ get_history(RoomPid) ->
   gen_server:call(RoomPid, get_history).
 
 init([]) ->
-  {ok, {{},[]}}.
+  {ok, {#{},[]}}.
 
 handle_cast({add_user, User}, {Users0, Messages} = _State) ->
   {_UserName, UserPid} = User,
@@ -49,7 +49,7 @@ handle_cast({add_message, {UserName, Msg}}, {Users, Messages0} = _State) ->
 handle_call({remove_user, UserPid}, _From, {Users0, Messages} = State) ->
   case maps:take(UserPid, Users0) of
     {_User, Users1} -> {reply, ok, {Users1, Messages}};
-    error -> {reply, {error, user_not_found}, {State}}
+    error -> {reply, {error, user_not_found}, State}
   end;
 
 handle_call(get_users, _From, {Users, _Messages} = State) ->
@@ -58,3 +58,12 @@ handle_call(get_users, _From, {Users, _Messages} = State) ->
 handle_call(get_history, _From, {_Users, Messages} = State) ->
   {reply, lists:reverse(Messages), State}.
 
+
+handle_info(_Request, State) ->
+  {noreply, State}.
+
+terminate(_Reason, _State) ->
+  ok.
+
+code_change(_OldVersion, State, _Extra) ->
+  {ok, State}.
