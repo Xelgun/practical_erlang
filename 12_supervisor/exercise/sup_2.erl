@@ -3,7 +3,7 @@
 -export([start_link/0, init/1, add_worker/1, remove_worker/1]).
 
 start_link() ->
-  supervisor:start_link(?MODULE, []).
+  supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 init(_Arg0) ->
   SupervisorSpecification = #{strategy => one_for_one,

@@ -7,8 +7,8 @@
 -define(ping, ping).
 
 
-start_link(WorkerId) ->
-  gen_server:start_link(?MODULE, [WorkerId], []).
+start_link(Pid) ->
+  gen_server:start_link(?MODULE, [Pid], []).
 
 ping(Pid) ->
   gen_server:call(Pid, ?ping).
@@ -31,5 +31,5 @@ handle_info(_, Pid) ->
 terminate(_, _) ->
   ok.
 
-code_change(_, _, Pid) ->
+code_change(_, Pid, _) ->
   {ok, Pid}.
